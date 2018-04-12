@@ -22,32 +22,42 @@ $(document).ready(function ($) {
     //
     // });
 
-    $(".container").on('click', $(".result_list.header"), function () {
 
+
+    $(".result_list").on('click', function () {
         alert("header clicked");
         var message = $(this).attr("class");
-        alert(message);
-        var header = $(this);       // this - container
+        alert("Onclick class\t" + message);
+        var header = $(this);       // this - result_list
 
-        //getting the next element
-        var content = header.next();
-        console.log(content);
-        //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+        var content = header.children();    // header
+        message = content.attr("class");
+        alert("Next class\t" + message);
 
-        content.slideToggle(500, function () {
-            //execute this after slideToggle is done
-            //change text of header based on visibility of content div
+        content.slideToggle(200, function () {
 
         });
-
     });
 
+    // $(".header").click(function () {
+    //
+    //     var $header = $(this);
+    //     //getting the next element
+    //     var $content = $header.next();
+    //     //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+    //     $content.slideToggle(100, function () {
+    //         //execute this after slideToggle is done
+    //         //change text of header based on visibility of content div
+    //         $header.text(function () {
+    //             //change text based on condition
+    //             return $content.is(":visible") ? "Collapse" : "Expand";
+    //         });
+    //     });
+    //
+    // });
+
     $("#search-form").submit(function (event) {
-
         alert("Submited!");
-
-
-        // Prevent the form from submitting via the browser.
         event.preventDefault();
 
         searchViaAjax();
@@ -55,39 +65,64 @@ $(document).ready(function ($) {
     });
 
     $("#update-form").submit(function (event) {
-
         alert("Submited!");
-
-        // Prevent the form from submitting via the browser.
         event.preventDefault();
 
         updateName();
-
     });
 
     $("#create-form").submit(function (event) {
-
         alert("Submited!");
-
-        // Prevent the form from submitting via the browser.
         event.preventDefault();
 
         saveChild();
-
     });
 
     $("#delete-form").submit(function (event) {
-
         alert("Submited!");
-
-        // Prevent the form from submitting via the browser.
         event.preventDefault();
 
         deleteNode();
-
     });
 
 });
+
+function appendDom(container, jsonData) {
+    for (var i = 0; i < jsonData.length; i++) {
+        var header = $("<div class='header list-group'></div>");
+        var content = $("<div class='content list-group-item'></div>");
+        var glyph = $("<i class='glyphicon glyphicon-chevron-right'></i>");
+        var buttons = $("<span class=\"pull-right\">\n" +
+            "                        <span class=\"btn btn-xs btn-default\"\n" +
+            "                              onclick=\"alert('Action2 -> Update'); event.stopPropagation();\">\n" +
+            "                            <span class=\"glyphicon glyphicon-cog\" aria-hidden=\"true\"></span>\n" +
+            "                        </span>\n" +
+            "                        <span class=\"btn btn-xs btn-default\"\n" +
+            "                              onclick=\"alert('Action2 -> Play'); event.stopPropagation();\">\n" +
+            "                            <span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>\n" +
+            "                        </span>\n" +
+            "                        <span class=\"btn btn-xs btn-default\"\n" +
+            "                              onclick=\"alert('Action2 -> Delete'); event.stopPropagation();\">\n" +
+            "                            <span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>\n" +
+            "                        </span>\n" +
+            "                    </span>");
+
+
+        var nodeNameSpan = $("<span></span>");
+        var nodeChildrenSpan = $("<span></span>");
+
+        nodeNameSpan.text(jsonData[i].name);
+        nodeChildrenSpan.text(jsonData[i].childrenAmount);
+
+        header.append(glyph, nodeNameSpan, nodeChildrenSpan, buttons);
+
+        if (jsonData[i].childrenAmount > 0) {
+            appendDom(content, jsonData[i].componentList);
+        }
+
+        container.append(header, content);
+    }
+}
 
 function deleteNode() {
     var composite = {};
@@ -297,25 +332,3 @@ function display(jsonData) {
 //
 //     // $(".list-group").addClass('collapse');
 // }
-
-function appendDom(container, jsonData) {
-    for (var i = 0; i < jsonData.length; i++) {
-        var header = $("<div class='header '></div>");
-        var content = $("<div class='content '></div>");
-        var glyph = $("<i class='glyphicon glyphicon-chevron-right'></i>");
-        var nodeNameSpan = $("<span></span>");
-        var nodeChildrenSpan = $("<span></span>");
-
-        nodeNameSpan.text(jsonData[i].name);
-        nodeChildrenSpan.text(jsonData[i].childrenAmount);
-
-        header.append(glyph, nodeNameSpan, nodeChildrenSpan);
-
-        if (jsonData[i].childrenAmount > 0) {
-                 appendDom(content, jsonData[i].componentList);
-             }
-
-        container.append(header, content);
-    }
-
-}
