@@ -36,17 +36,20 @@ public class SkillRepositoryImpl implements SkillRepository {
     }
 
     @Override
-    public void update(JsonDto jsonDto) throws DaoException {
-        componentUpdater.updateFile(DATA_FILE, jsonDto);
+    public boolean update(JsonDto jsonDto) throws DaoException {
+        boolean isUpdated = componentUpdater.updateFile(DATA_FILE, jsonDto);
+        return isUpdated;
     }
 
     @Override
-    public void save(JsonDto jsonDto) throws DaoException {
-        componentCreator.updateFile(DATA_FILE, jsonDto);
+    public boolean save(JsonDto jsonDto) throws DaoException {
+        boolean isSaved = componentCreator.updateFile(DATA_FILE, jsonDto);
+        return isSaved;
     }
 
     @Override
-    public void delete(JsonDto jsonDto) throws DaoException {
-        componentEraser.updateFile(DATA_FILE, jsonDto);
+    public boolean delete(JsonDto jsonDto) throws DaoException {
+        boolean isDeleted = componentEraser.updateFile(DATA_FILE, jsonDto);
+        return isDeleted;
     }
 }

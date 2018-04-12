@@ -37,9 +37,10 @@ public class Controller {
     }
 
     @RequestMapping(value = "/skill/update", method = RequestMethod.PUT)
-    public void updateName(@Valid @RequestBody UpdatingCriteria updateCriteria) throws ServiceException {
+    public boolean updateName(@Valid @RequestBody UpdatingCriteria updateCriteria) throws ServiceException {
         Log.info("updateName(): " + updateCriteria);
-        skillService.updateName(updateCriteria);
+        boolean isUpdated = skillService.updateName(updateCriteria);
+        return isUpdated;
     }
 
     @RequestMapping(value = "/skill/", method = RequestMethod.PUT)
@@ -51,15 +52,17 @@ public class Controller {
     }
 
     @RequestMapping(value = "/skill/add", method = RequestMethod.PUT)
-    public void save(@Valid @RequestBody CreatingCriteria creatingCriteria) throws ServiceException {
+    public boolean save(@Valid @RequestBody CreatingCriteria creatingCriteria) throws ServiceException {
         Log.info("createNode(): child name " + creatingCriteria.getChildName() + " to parent " + creatingCriteria.getId());
-        skillService.save(creatingCriteria);
+        boolean isSaved = skillService.save(creatingCriteria);
+        return isSaved;
     }
 
     @RequestMapping(value = "/skill/", method = RequestMethod.DELETE)
-    public void save(@Valid @RequestBody SearchingCriteria searchingCriteria) throws ServiceException {
+    public boolean delete(@Valid @RequestBody SearchingCriteria searchingCriteria) throws ServiceException {
         Log.info("createNode(): child name " + searchingCriteria.getId());
-        skillService.delete(searchingCriteria);
+        boolean isDeleted = skillService.delete(searchingCriteria);
+        return isDeleted;
     }
 
 }

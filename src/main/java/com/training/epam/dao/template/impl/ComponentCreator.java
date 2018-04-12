@@ -3,7 +3,7 @@ package com.training.epam.dao.template.impl;
 import com.training.epam.dao.template.AbstractTemplateComponentManager;
 import com.training.epam.entity.dto.request.CreatingCriteria;
 import com.training.epam.entity.dto.request.JsonDto;
-import com.training.epam.factory.CompositeFactory;
+import com.training.epam.entity.validator.Verifiable;
 import com.training.epam.util.FileBrowser;
 import com.training.epam.util.FileWriter;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,12 +17,12 @@ public class ComponentCreator extends AbstractTemplateComponentManager {
     private static final int ONE_ROW = 1;
     private static final int NODE_CELL_NUMBER = 0;
 
-    public ComponentCreator(FileBrowser fileBrowser, FileWriter fileSaver, CompositeFactory compositeFactory) {
-        super(fileBrowser, fileSaver, compositeFactory);
+    public ComponentCreator(FileBrowser fileBrowser, FileWriter fileSaver, Verifiable<Cell> cellValidator) {
+        super(fileBrowser, fileSaver, cellValidator);
     }
 
     @Override
-    protected void execute(Sheet sheet, JsonDto jsonDto) {
+    protected boolean execute(Sheet sheet, JsonDto jsonDto) {
         CreatingCriteria creatingCriteria = (CreatingCriteria) jsonDto;
         String parentName = creatingCriteria.getId();
         String childName = creatingCriteria.getChildName();
@@ -34,6 +34,7 @@ public class ComponentCreator extends AbstractTemplateComponentManager {
             createParentCell(sheet, childName);
         }
 
+        return true;
     }
 
     private void createParentCell(Sheet sheet, String nodeName) {
@@ -64,7 +65,7 @@ public class ComponentCreator extends AbstractTemplateComponentManager {
         Row expectedRow = sheet.getRow(rowIndex);
         if (expectedRow != null) {
             Cell expectedCell = expectedRow.getCell(cellIndex);
-            isCellExist = expectedCell == null || expectedCell.getStringCellValue() != null;
+            isCellExist = (expectedCell == null || expectedCell.getStringCellValue() != null);
         }
 
         return isCellExist;

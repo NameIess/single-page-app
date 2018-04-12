@@ -10,11 +10,11 @@ public interface SkillRepository {
 
     List<Composite> findAll() throws DaoException;
 
-    void update(JsonDto jsonDto) throws DaoException;
+    boolean update(JsonDto jsonDto) throws DaoException;
 
-    void save(JsonDto jsonDto) throws DaoException;
+    boolean save(JsonDto jsonDto) throws DaoException;
 
-    void delete(JsonDto jsonDto) throws DaoException;
+    boolean delete(JsonDto jsonDto) throws DaoException;
 
 //    Composite findByName(JsonDto jsonDto) throws DaoException;
 }

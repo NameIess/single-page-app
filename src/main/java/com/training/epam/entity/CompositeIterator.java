@@ -1,13 +1,10 @@
 package com.training.epam.entity;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Stack;
 
 public class CompositeIterator implements Iterator<Composite> {
     private Stack<Iterator<Composite>> stack = new Stack<>();
-    private Set<Composite> iteratedComposite = new HashSet<>();
 
     public CompositeIterator(Iterator<Composite> iterator) {
         stack.push(iterator);
@@ -19,11 +16,9 @@ public class CompositeIterator implements Iterator<Composite> {
         if (hasNext()) {
             Iterator<Composite> iterator = stack.peek();
             composite = iterator.next();
-            if (!iteratedComposite.contains(composite)) {
-                Iterator<Composite> compositeIterator = composite.createIterator();
-                stack.push(compositeIterator);
-                iteratedComposite.add(composite);
-            }
+
+            Iterator<Composite> compositeIterator = composite.createIterator();
+            stack.push(compositeIterator);
         }
 
         return composite;
@@ -31,7 +26,7 @@ public class CompositeIterator implements Iterator<Composite> {
 
     @Override
     public boolean hasNext() {
-        boolean hasMoreIterators;
+        boolean hasNextIterator;
         if (!stack.empty()) {
             Iterator<Composite> iterator = stack.peek();
 
@@ -40,12 +35,12 @@ public class CompositeIterator implements Iterator<Composite> {
                 return hasNext();           // RECURSION
 
             } else {
-                hasMoreIterators = true;
+                hasNextIterator = true;
             }
         } else {
-            hasMoreIterators = false;
+            hasNextIterator = false;
         }
 
-        return hasMoreIterators;
+        return hasNextIterator;
     }
 }

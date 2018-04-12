@@ -2,21 +2,16 @@ package com.training.epam.service.impl;
 
 import com.training.epam.dao.SkillRepository;
 import com.training.epam.dao.exception.DaoException;
-import com.training.epam.dao.impl.SkillRepositoryImpl;
 import com.training.epam.entity.Composite;
 import com.training.epam.entity.dto.request.JsonDto;
 import com.training.epam.service.SkillService;
 import com.training.epam.service.exception.ServiceException;
 import com.training.epam.service.impl.template.AbstractTemplateCacheManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service("skillService")
 public class SkillServiceImpl implements SkillService {
@@ -35,6 +30,7 @@ public class SkillServiceImpl implements SkillService {
     public List<Composite> findAll() throws ServiceException {
         try {
             cashedComponent = skillRepository.findAll();
+            checkReceivedData(cashedComponent);
 
             return cashedComponent;
         } catch (DaoException e) {
@@ -44,9 +40,10 @@ public class SkillServiceImpl implements SkillService {
 
 
     @Override
-    public void updateName(JsonDto jsonDto) throws ServiceException {
+    public boolean updateName(JsonDto jsonDto) throws ServiceException {
         try {
-            skillRepository.update(jsonDto);
+            boolean isUpdated = skillRepository.update(jsonDto);
+            return isUpdated;
 
         } catch (DaoException e) {
             throw new ServiceException("Exception within updateName(): " + e.getMessage(), e);
@@ -57,17 +54,16 @@ public class SkillServiceImpl implements SkillService {
     public List<Composite> searchByCriteria(JsonDto jsonDto) throws ServiceException {
         List<Composite> compositeList = cacheManager.handleCriteria(cashedComponent, jsonDto);
 
-        if (compositeList == null || compositeList.isEmpty()) {
-            throw new ServiceException("Object not fount");
-        }
+        checkReceivedData(compositeList);
 
         return compositeList;
     }
 
     @Override
-    public void save(JsonDto jsonDto) throws ServiceException {
+    public boolean save(JsonDto jsonDto) throws ServiceException {
         try {
-            skillRepository.save(jsonDto);
+            boolean isSaved = skillRepository.save(jsonDto);
+            return isSaved;
 
         } catch (DaoException e) {
             throw new ServiceException("Exception within save(): " + e.getMessage(), e);
@@ -75,12 +71,19 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public void delete(JsonDto jsonDto) throws ServiceException {
+    public boolean delete(JsonDto jsonDto) throws ServiceException {
         try {
-            skillRepository.delete(jsonDto);
+            boolean isDeleted = skillRepository.delete(jsonDto);
+            return isDeleted;
 
         } catch (DaoException e) {
             throw new ServiceException("Exception within delete(): " + e.getMessage(), e);
+        }
+    }
+
+    private void checkReceivedData(List<Composite> compositeList) throws ServiceException {
+        if (compositeList == null || compositeList.isEmpty()) {
+            throw new ServiceException("Data not found");
         }
     }
 }

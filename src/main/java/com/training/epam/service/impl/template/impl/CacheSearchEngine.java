@@ -11,19 +11,16 @@ import org.springframework.stereotype.Component;
 
 @Component("cacheSearchEngine")
 public class CacheSearchEngine extends AbstractTemplateCacheManager {
-    private static final Logger Log = LogManager.getLogger(CacheSearchEngine.class.getSimpleName());
 
     @Override
     protected Composite execute(Composite node, JsonDto jsonDto) {
         Composite composite = null;
         SearchingCriteria searchCriteria = (SearchingCriteria) jsonDto;
-        String criteriaName = searchCriteria.getId();
+        String prefix = searchCriteria.getId();
         String nodeName = node.getName();
-        Log.info("COMPARATION NODE NAME: " + nodeName + " AND CRITERIA: " + criteriaName);
 
-        if (StringUtils.startsWithIgnoreCase(nodeName, criteriaName)) {
+        if (StringUtils.startsWithIgnoreCase(nodeName, prefix)) {
             composite = node;
-//            compositeList.add(node);        // VARIOUS IMPLEMENTATIONS. TEMPLATE COMMAND?
         }
 
         return composite;

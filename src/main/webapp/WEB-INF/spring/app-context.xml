@@ -20,4 +20,5 @@
     </mvc:annotation-driven>
 
     <bean id="logAspect" class="com.training.epam.service.logger.ServiceLogger" />
+
 </beans>

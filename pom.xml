@@ -41,6 +41,9 @@
         <aspectj.version>1.9.0</aspectj.version>
         <hibernate.version>6.0.9.Final</hibernate.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
+        <junit.version>4.12</junit.version>
+        <junit-dataprovider.version>1.10.0</junit-dataprovider.version>
+        <mockito-all.version>1.9.5</mockito-all.version>
     </properties>
 
 
@@ -133,6 +136,27 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>${validation-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tngtech.java</groupId>
+            <artifactId>junit-dataprovider</artifactId>
+            <version>${junit-dataprovider.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito-all.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

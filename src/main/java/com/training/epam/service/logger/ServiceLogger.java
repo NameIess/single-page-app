@@ -6,12 +6,19 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 
 import java.util.Arrays;
 
 @Aspect
 public class ServiceLogger {
     private static final Logger Log = LogManager.getLogger(ServiceLogger.class.getSimpleName());
+
+    @Before("execution(* com.training.epam.service.impl.SkillServiceImpl.*(..))")
+    public void logBeforeExecution(JoinPoint joinPoint) throws Throwable {
+        Log.info("Method has been called : " + joinPoint.getSignature().getName());
+        Log.info("Transferred parameters : " + Arrays.toString(joinPoint.getArgs()));
+    }
 
     @AfterReturning(
             pointcut = "execution(* com.training.epam.service.impl.SkillServiceImpl.*(..))",

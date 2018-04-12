@@ -10,11 +10,11 @@ public interface SkillService {
 
     List<Composite> findAll() throws ServiceException;
 
-    void updateName(JsonDto jsonDto) throws ServiceException;
+    boolean updateName(JsonDto jsonDto) throws ServiceException;
 
     List<Composite> searchByCriteria(JsonDto jsonDto) throws ServiceException;
 
-    void save(JsonDto jsonDto) throws ServiceException;
+    boolean save(JsonDto jsonDto) throws ServiceException;
 
-    void delete(JsonDto jsonDto) throws ServiceException;
+    boolean delete(JsonDto jsonDto) throws ServiceException;
 }

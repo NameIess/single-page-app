@@ -1,9 +1,9 @@
-package com.training.epam.factory;
+package com.training.epam.resources.factory;
 
 import com.training.epam.entity.Composite;
 
 public interface CompositeFactory {
     Composite create();
 
-    Composite addChildAndGet(Composite parent, String childName);
+    Composite create(String name);
 }
