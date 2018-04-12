@@ -8,29 +8,14 @@ $(document).ready(function ($) {
             .toggleClass('glyphicon-chevron-down');
     });
 
-    // $(".header").click(function () {
-    //
-    //     $header = $(this);
-    //     //getting the next element
-    //     $content = $header.next();
-    //     //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
-    //     $content.slideToggle(500, function () {
-    //         //execute this after slideToggle is done
-    //         //change text of header based on visibility of content div
-    //
-    //     });
-    //
-    // });
 
-
-
-    $(".result_list").on('click', function () {
+    $(".result_list").on('click', '.header', function () {
         alert("header clicked");
         var message = $(this).attr("class");
         alert("Onclick class\t" + message);
         var header = $(this);       // this - result_list
 
-        var content = header.children();    // header
+        var content = header.next();    // header
         message = content.attr("class");
         alert("Next class\t" + message);
 
@@ -38,23 +23,6 @@ $(document).ready(function ($) {
 
         });
     });
-
-    // $(".header").click(function () {
-    //
-    //     var $header = $(this);
-    //     //getting the next element
-    //     var $content = $header.next();
-    //     //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
-    //     $content.slideToggle(100, function () {
-    //         //execute this after slideToggle is done
-    //         //change text of header based on visibility of content div
-    //         $header.text(function () {
-    //             //change text based on condition
-    //             return $content.is(":visible") ? "Collapse" : "Expand";
-    //         });
-    //     });
-    //
-    // });
 
     $("#search-form").submit(function (event) {
         alert("Submited!");
@@ -295,40 +263,3 @@ function display(jsonData) {
         + JSON.stringify(jsonData, null, 4) + "</pre>";
     $('#feedback').html(json);
 }
-
-// function appendDom(container, jsonData) {
-//     for (var i = 0; i < jsonData.length; i++) {
-//         // if (jsonData[i].name === null) {
-//         //     var wrapper = $("<div></div>");
-//             var childWrapper = $("<div class='list-group' aria-expanded='false' data-role='collapsible'></div>");
-//             var onChildRef = $("<a class='list-group-item collapsed' data-toggle='collapse' aria-expanded='false'></a>");
-//             var glyph = $("<i class='glyphicon glyphicon-chevron-right'></i>");
-//
-//             var parentName = jsonData[i].name;
-//
-//             if (parentName === null) {
-//                 parentName = jsonData[i].childrenAmount;
-//             }
-//
-//             onChildRef.text(jsonData[i].name).attr('href', parentName).append(glyph);
-//             childWrapper.attr('id', parentName);
-//
-//             // childWrapper.addClass('list-group');
-//
-//         // collapse' style='height: 0'
-//
-//             // var content = wrapper.append(onChildRef, childWrapper);
-//
-//             if (jsonData[i].childrenAmount > 0) {
-//                 appendDom(childWrapper, jsonData[i].componentList);
-//             }
-//
-//             container.append(onChildRef, childWrapper);
-//         }
-//     // }
-//
-//     // $('div[data-role=collapsible]').collapsible({refresh : true});
-//     // $('div[data-role=collapsible]').collapsed({refresh : true});
-//
-//     // $(".list-group").addClass('collapse');
-// }

@@ -69,8 +69,6 @@
                 <button type="submit" id="btn-delete" class="btn btn-primary">Submit</button>
             </form>
         </div>
-
-
     </div>
 
 
