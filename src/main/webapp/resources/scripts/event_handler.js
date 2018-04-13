@@ -1,114 +1,137 @@
 $(document).ready(function ($) {
 
-    loadSkillList();
+    findAll();
 
-    $('.list-group-item').on('click', function () {
-        $('.glyphicon-chevron-right', this)
+    $(document).on('click', 'div.header', function () {
+        var header = $(this);
+        var content = header.next();
+        content.slideToggle(200);
+
+        $('.glyphicon.nesting', this)
             .toggleClass('glyphicon-chevron-right')
             .toggleClass('glyphicon-chevron-down');
     });
 
-
-    $(".result_list").on('click', '.header', function () {
-        alert("header clicked");
-        var message = $(this).attr("class");
-        alert("Onclick class\t" + message);
-        var header = $(this);       // this - result_list
-
-        var content = header.next();    // header
-        message = content.attr("class");
-        alert("Next class\t" + message);
-
-        content.slideToggle(200, function () {
-
-        });
-    });
+    // $(".just-padding").on('click', 'div.header', function () {
+    //     var header = $(this);
+    //     var content = header.next();
+    //     content.slideToggle(200);
+    //
+    //     $('.glyphicon.nesting', this)
+    //         .toggleClass('glyphicon-chevron-right')
+    //         .toggleClass('glyphicon-chevron-down');
+    // });
 
     $("#search-form").submit(function (event) {
-        alert("Submited!");
-        event.preventDefault();
-
-        searchViaAjax();
-
+        if ($(".error").length > 0) {
+            event.preventDefault();
+            let e = $.event("keydown", {keyCode: 20});
+            $("#search-criteria").trigger(e);
+        } else {
+            alert("Submited!");
+            event.preventDefault();
+            findNode();
+        }
     });
 
-    $("#update-form").submit(function (event) {
-        alert("Submited!");
-        event.preventDefault();
-
-        updateName();
+    $('#modal-form').validate({
+        rules: {
+            updated: {
+                minlength: 3,
+                maxlength: 15,
+                required: true
+            }
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+        unhighlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-error');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function (error, element) {
+            if (element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
     });
 
-    $("#create-form").submit(function (event) {
-        alert("Submited!");
-        event.preventDefault();
-
-        saveChild();
-    });
-
-    $("#delete-form").submit(function (event) {
-        alert("Submited!");
-        event.preventDefault();
-
-        deleteNode();
-    });
 
 });
 
-function appendDom(container, jsonData) {
+function appendDom(container, jsonData, hasButton) {
     for (var i = 0; i < jsonData.length; i++) {
+
+
         var header = $("<div class='header list-group'></div>");
         var content = $("<div class='content list-group-item'></div>");
-        var glyph = $("<i class='glyphicon glyphicon-chevron-right'></i>");
-        var buttons = $("<span class=\"pull-right\">\n" +
-            "                        <span class=\"btn btn-xs btn-default\"\n" +
-            "                              onclick=\"alert('Action2 -> Update'); event.stopPropagation();\">\n" +
-            "                            <span class=\"glyphicon glyphicon-cog\" aria-hidden=\"true\"></span>\n" +
+        var glyph = $("<i class='glyphicon glyphicon-chevron-right nesting'></i>");
+        var buttons = $("<span class='pull-right'>\n" +
+            "                        <span class='btn btn-xs btn-success'\n" +
+            "                              onclick='renderUpdateDialog(this); event.stopPropagation();'>\n" +
+            "                            <span class='glyphicon glyphicon-cog' aria-hidden='true'></span>\n" +
             "                        </span>\n" +
-            "                        <span class=\"btn btn-xs btn-default\"\n" +
-            "                              onclick=\"alert('Action2 -> Play'); event.stopPropagation();\">\n" +
-            "                            <span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>\n" +
+            "                        <span class='btn btn-xs btn-primary'\n" +
+            "                              onclick=\"renderInsertDialog(this); event.stopPropagation();\">\n" +
+            "                            <span class='glyphicon glyphicon-circle-arrow-down' aria-hidden='true'></span>\n" +
             "                        </span>\n" +
-            "                        <span class=\"btn btn-xs btn-default\"\n" +
-            "                              onclick=\"alert('Action2 -> Delete'); event.stopPropagation();\">\n" +
-            "                            <span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>\n" +
+            "                        <span class='btn btn-xs btn-danger'\n" +
+            "                              onclick='deleteNode(this); event.stopPropagation();'>\n" +
+            "                            <span class='glyphicon glyphicon-trash' aria-hidden='true'></span>\n" +
             "                        </span>\n" +
             "                    </span>");
 
+        var nodeNameSpan = $("<span class='identity'></span>");
+        var nodeChildSpan = $("<span class='pull-left child-amount'></span>");
 
-        var nodeNameSpan = $("<span></span>");
-        var nodeChildrenSpan = $("<span></span>");
+        var nodeName = jsonData[i].name;
 
-        nodeNameSpan.text(jsonData[i].name);
-        nodeChildrenSpan.text(jsonData[i].childrenAmount);
 
-        header.append(glyph, nodeNameSpan, nodeChildrenSpan, buttons);
+        nodeNameSpan.text(nodeName).attr('name', nodeName);         // CHANGED ID TO NAME
 
-        if (jsonData[i].childrenAmount > 0) {
-            appendDom(content, jsonData[i].componentList);
+        let childAmount = jsonData[i].childrenAmount;
+        nodeChildSpan.text(childAmount);
+        header.append(glyph, nodeNameSpan, nodeChildSpan);
+
+        if (hasButton) {
+            header.append(buttons);
+        }
+
+        if (childAmount > 0) {
+            appendDom(content, jsonData[i].componentList, hasButton);
         }
 
         container.append(header, content);
     }
+
+
 }
 
-function deleteNode() {
+function deleteNode(context) {
     var composite = {};
-    composite["currentName"] = $("#delete-name").val();
+    var root = $(context).parent().parent();
+    var identifier = root.find(".identity").text();
 
-    alert("Composite: " + composite["currentName"]);
+    composite["currentName"] = identifier;
 
     $.ajax({
         type: "DELETE",
         contentType: "application/json",
         url: "http://localhost:8084/developer/skill/",
         data: JSON.stringify(composite),
-        dataType: 'json',
+        dataType: "JSON",
         async: true,
         timeout: 100000,
         success: function (data) {
+            console.log("Server response", data);
             if (data === true) {
-                alert("SUCCESS TRUE");
+                var childAmount = parseInt(root.parent().prev().find(".child-amount").text(), 10) - 1;
+                root.parent().prev().find(".child-amount").text(childAmount);
+                removeElement(root);
+                successAlert();
             } else {
                 alert("SUCCESS FALSE");
             }
@@ -116,8 +139,6 @@ function deleteNode() {
         error: function (e) {
             alert("ERROR");
             console.log("ERROR LOG: ", e);
-            display(e);
-            appendDom($("#content"), data);
         },
         done: function (e) {
             alert("DONE");
@@ -126,20 +147,40 @@ function deleteNode() {
     });
 }
 
-function loadSkillList() {
+function removeElement(element) {
+    var next = $(element).next();
+    if (next.hasClass("content")) {
+        next.remove();
+    }
+    $(element).remove();
+}
+
+function clearElement() {
+    $(".result_list").empty();
+}
+
+function findAll() {
     $.ajax({
         type: "GET",
         contentType: "application/json",
         url: "http://localhost:8084/developer/skill/list/",
         async: true,
         success: function (data) {
-            alert("SUCCESS");
-            console.log("ALL DATA LOADED: ", data);
-            display(data);
-            appendDom($(".result_list"), data);
+            if (data !== null) {
+                alert("SUCCESS");
+                console.log("ALL DATA LOADED: ", data);
+                display(data);
+                clearElement();
+                let componentList = data[0].componentList;
+                componentList.splice(0, 1);
+                showData(componentList, true);
+            } else {
+                alert("Information not found");
+            }
         },
         error: function (e) {
             console.log("ERROR LOG: ", e);
+            handleError(e);
             display(e);
         },
         done: function (e) {
@@ -148,12 +189,51 @@ function loadSkillList() {
     });
 }
 
-function updateName() {
-    var composite = {};
-    composite["currentName"] = $("#current-name").val();
-    composite["updatedName"] = $("#updated-name").val();
+function renderInsertDialog(context) {
+    identifyDialog(context);
+    $("#modal .modal-title").text("Create category");
+    $("label[for='updated-name']").text("Child category:");
+    $("label[for='current-name']").text("Parent category:");
+    $("#modal .btn-primary").removeClass("updater").addClass("creator");
+}
 
-    alert("Composite: " + composite["currentName"] + " to " + composite["updatedName"]);
+function identifyDialog(context) {
+    $("#modal").modal();
+    var parent = $(context).parent().parent();
+    var identifier = parent.find(".identity").text();
+    $("#modal .identified").text(identifier);
+}
+
+function renderUpdateDialog(context) {
+    identifyDialog(context);
+    $("#modal .modal-title").text("Update skill name");
+    $("label[for='updated-name']").text("Updated name:");
+    $("label[for='current-name']").text("Current name:");
+    $("#modal .btn-primary").removeClass("creator").addClass("updater");
+}
+
+function renderErrorDialog(header, message) {
+    $("#event-modal").modal();
+    $("#event-modal .modal-title").text(header);
+    $("#event-modal .modal-message").text(message);
+}
+
+function submitDialog() {
+    var updated = $("#modal .updated").val();
+    var current = $("#modal .identified").text();
+    if ($("#modal .btn-primary").hasClass("creator")) {
+        insertNode(current, updated);
+    } else if ($("#modal .btn-primary").hasClass("updater")) {
+        updateNode(current, updated);
+    }
+    $("#modal").modal("toggle");
+}
+
+function updateNode(current, updated) {
+
+    var composite = {};
+    composite["currentName"] = current;
+    composite["updatedName"] = updated;
 
     $.ajax({
         type: "PUT",
@@ -166,16 +246,20 @@ function updateName() {
         success: function (data) {
             if (data === true) {
                 alert("SUCCESS TRUE");
+                var selector = "span[name='" + current + "']";
+                alert("Updated element: " + current + " to " + updated);
+                $(selector).attr('name', updated).text(updated);
             } else {
                 alert("SUCCESS FALSE");
+                handleValidatorError(data);
             }
             console.log("SUCCESS LOG: ", data);
             display(data);
-            loadSkillList();
         },
         error: function (e) {
             alert("ERROR");
             console.log("ERROR LOG: ", e);
+            handleError(e);
             display(e);
         },
         done: function (e) {
@@ -185,12 +269,50 @@ function updateName() {
     });
 }
 
-function saveChild() {
-    var criteria = {};
-    criteria["parentName"] = $("#parent-name").val();
-    criteria["childName"] = $("#child-name").val();
+function addElement(parent, child) {
+    alert("Parent id : " + parent);
+    var parentSelector = "span[name='" + parent + "']";
+    var root = $(parentSelector).parent();
+    alert(root.attr("class"));
+    var childAmount = parseInt(root.find(".child-amount").text(), 10) + 1;
+    root.find(".child-amount").text(childAmount);
 
-    alert("Composite: " + criteria["parentName"] + " to " + criteria["childName"]);
+    var next = root.next();
+    alert(next.attr("class"));
+    var header = $("<div class='header list-group'></div>");
+    var content = $("<div class='content list-group-item'></div>");
+    var glyph = $("<i class='glyphicon glyphicon-chevron-right nesting'></i>");
+    var buttons = $("<span class='pull-right'>\n" +
+        "                        <span class='btn btn-xs btn-success'\n" +
+        "                              onclick='renderUpdateDialog(this); event.stopPropagation();'>\n" +
+        "                            <span class='glyphicon glyphicon-cog' aria-hidden='true'></span>\n" +
+        "                        </span>\n" +
+        "                        <span class='btn btn-xs btn-primary'\n" +
+        "                              onclick=\"renderInsertDialog(this); event.stopPropagation();\">\n" +
+        "                            <span class='glyphicon glyphicon-circle-arrow-down' aria-hidden='true'></span>\n" +
+        "                        </span>\n" +
+        "                        <span class='btn btn-xs btn-danger'\n" +
+        "                              onclick='deleteNode(this); event.stopPropagation();'>\n" +
+        "                            <span class='glyphicon glyphicon-trash' aria-hidden='true'></span>\n" +
+        "                        </span>\n" +
+        "                    </span>");
+
+    var nodeNameSpan = $("<span class='identity'></span>");
+    var nodeChildSpan = $("<span class='pull-left child-amount'></span>");
+
+    nodeNameSpan.text(child).attr('name', child);       // CHANGED ID TO NAME
+    nodeChildSpan.text(0);
+
+    header.append(glyph, nodeNameSpan, nodeChildSpan, buttons);
+
+    next.append(header, content);
+}
+
+function insertNode(parent, child) {
+
+    var criteria = {};
+    criteria["parentName"] = parent;
+    criteria["childName"] = child;
 
     $.ajax({
         type: "PUT",
@@ -203,17 +325,18 @@ function saveChild() {
         success: function (data) {
             if (data === true) {
                 alert("SUCCESS TRUE");
+                addElement(parent, child);
             } else {
                 alert("SUCCESS FALSE");
             }
 
             console.log("SUCCESS LOG: ", data);
             display(data);
-            appendDom($("#content"), data);
         },
         error: function (e) {
             alert("ERROR");
             console.log("ERROR LOG: ", e);
+            handleError(e);
             display(e);
         },
         done: function (e) {
@@ -223,43 +346,65 @@ function saveChild() {
     });
 }
 
+function showData(data, hasButton) {
+    appendDom($(".result_list"), data, hasButton);
+}
 
-function searchViaAjax() {
-
-    var search = {};
-    search["currentName"] = $("#search-criteria").val();
-
-    alert("Searched value: " + search["currentName"]);
+function findNode() {
+    var criteria = {};
+    criteria["currentName"] = $("#search-criteria").val();
 
     $.ajax({
         type: "PUT",
         contentType: "application/json",
         url: "http://localhost:8084/developer/skill/",
-        data: JSON.stringify(search),
-        dataType: 'json',
+        data: JSON.stringify(criteria),
+        dataType: "JSON",
         async: true,
         timeout: 100000,
         success: function (data) {
-            alert("SUccess");
-            console.log("SUCCESS LOG: ", data);
-            display(data);
-            appendDom($("#content"), data);
+            console.log("Server response", data);
+            clearElement();
+            showData(data, false);
         },
         error: function (e) {
-
+            alert("Error");
             console.log("ERROR LOG: ", e);
             display(e);
+            handleError(e);
         },
         done: function (e) {
-            console.log("DONE LOG");
+            handleValidatorError(e);
+            console.log("DONE LOG ", e);
         }
     });
-
 }
 
 
+// TEMPORARY TO DELETE
 function display(jsonData) {
     var json = "<h4>Ajax Response</h4><pre>"
         + JSON.stringify(jsonData, null, 4) + "</pre>";
     $('#feedback').html(json);
+}
+
+function handleError(errorData) {
+    let responseText = errorData.responseText;
+
+    let field;
+    let message;
+    try {
+        let json = JSON.parse(responseText);
+        field = "Error caused by: ";
+        message;
+        for (let i = 0; i < json["fieldErrors"].length; i++) {
+            field += json["fieldErrors"][i]["field"];
+            message = json["fieldErrors"][i]["message"];
+        }
+    } catch {
+        field = "Error";
+        message = responseText;
+    }
+
+    renderErrorDialog(field, message);
 }

@@ -18,6 +18,6 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> handleServiceException(ServiceException exception) {
         return new ResponseEntity<>(
                 exception.getMessage(),
-                HttpStatus.CONFLICT);
+                HttpStatus.BAD_REQUEST);
     }
 }

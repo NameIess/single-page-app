@@ -21,11 +21,12 @@ public class ValidationExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
-    public ErrorFormInfo handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ErrorFormInfo> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         ErrorFormInfo errorDto = processFieldErrors(fieldErrors);
-        return errorDto;
+        return new ResponseEntity<>(
+                errorDto, HttpStatus.BAD_REQUEST);
     }
 
     private ErrorFormInfo processFieldErrors(List<FieldError> fieldErrors) {

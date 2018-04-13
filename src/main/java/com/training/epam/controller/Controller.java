@@ -32,13 +32,12 @@ public class Controller {
     @RequestMapping(value = "/skill/list/", method = RequestMethod.GET)
     public List<Composite> findAll() throws ServiceException {
         List<Composite> componentList = skillService.findAll();
-
         return componentList;
     }
 
     @RequestMapping(value = "/skill/update", method = RequestMethod.PUT)
     public boolean updateName(@Valid @RequestBody UpdatingCriteria updateCriteria) throws ServiceException {
-        Log.info("updateName(): " + updateCriteria);
+        Log.info("updateNode(): " + updateCriteria);
         boolean isUpdated = skillService.updateName(updateCriteria);
         return isUpdated;
     }

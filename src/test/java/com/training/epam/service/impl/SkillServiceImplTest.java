@@ -85,8 +85,9 @@ public class SkillServiceImplTest {
     }
 
     @Test
-    public void shouldFindEntityAndReturnListWhenEntityExists() throws ServiceException {
+    public void shouldFindEntityAndReturnListWhenEntityExists() throws ServiceException, DaoException {
         when(cacheManager.handleCriteria(anyList(), any(JsonDto.class))).thenReturn(TestResource.compositeList);
+        doReturn(TestResource.compositeList).when(skillRepository).findAll();
 
         List<Composite> actualResult = underTest.searchByCriteria(TestResource.SEARCHING_CRITERIA);
 

@@ -1,5 +1,6 @@
 package com.training.epam.service;
 
+import com.training.epam.dao.exception.DaoException;
 import com.training.epam.entity.Composite;
 import com.training.epam.entity.dto.request.JsonDto;
 import com.training.epam.service.exception.ServiceException;

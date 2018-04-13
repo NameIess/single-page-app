@@ -33,7 +33,7 @@ public class ComponentParser {
 
     public List<Composite> parseFile(String fileName) throws DaoException {
         List<Composite> componentList = new ArrayList<>();
-        Workbook workbook = redFile(fileName);
+        Workbook workbook = readFile(fileName);
 
         for (Sheet sheet : workbook) {
             Composite component = buildComposite(sheet);
@@ -43,13 +43,13 @@ public class ComponentParser {
         return componentList;
     }
 
-    private Workbook redFile(String fileName) throws DaoException {     // fileReader??
+    private Workbook readFile(String fileName) throws DaoException {     // fileReader??
         File file = fileBrowser.getFile(fileName);
         try (Workbook workbook = WorkbookFactory.create(file)) {
             return workbook;
 
         } catch (InvalidFormatException | IOException e) {
-            throw new DaoException("Exception within redFile(): " + e.getMessage(), e);
+            throw new DaoException("Exception within readFile(): " + e.getMessage(), e);
         }
     }
 

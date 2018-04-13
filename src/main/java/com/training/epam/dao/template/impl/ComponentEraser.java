@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component("componentEraser")
-public class ComponentEraser extends AbstractTemplateComponentManager {
+public class ComponentEraser extends AbstractTemplateComponentManager {     // НЕ УДАЛЯЕТСЯ ПОСЛЕДНИЙ ЭЛЕМЕНТ
 
     public ComponentEraser(FileBrowser fileBrowser, FileWriter fileSaver, Verifiable<Cell> cellValidator) {
         super(fileBrowser, fileSaver, cellValidator);
@@ -25,7 +25,6 @@ public class ComponentEraser extends AbstractTemplateComponentManager {
     protected boolean execute(Sheet sheet, JsonDto jsonDto) {
         SearchingCriteria searchingCriteria = (SearchingCriteria) jsonDto;
         String cellName = searchingCriteria.getId();
-
         Cell cellToRemove = findCellByName(sheet, cellName);
 
         boolean isDeleted = false;
@@ -40,17 +39,21 @@ public class ComponentEraser extends AbstractTemplateComponentManager {
     }
 
     private void removeRows(Sheet sheet, List<Row> rowList) {
+        int totalRowsAmout = sheet.getLastRowNum();
         for (Row row : rowList) {
-            int rowIndex = row.getRowNum() + 1;
-            sheet.shiftRows(rowIndex, sheet.getLastRowNum(), -1);
+            int nextRowIndex = row.getRowNum() + 1;
+            if (nextRowIndex < totalRowsAmout) {
+                sheet.shiftRows(nextRowIndex, totalRowsAmout, -1);
+            } else {
+                sheet.removeRow(row);
+            }
         }
     }
 
 
-
     private List<Row> findRowsToRemove(Sheet sheet, Cell parentCell) {
         Row parentRow = parentCell.getRow();
-        int rowNum = parentRow.getRowNum() + 1;
+        int rowNum = parentRow.getRowNum() + 1;     // ошибка с последним элементом
         int parentNesting = parentCell.getColumnIndex();
 
         List<Row> toRemoveRows = new ArrayList<>();
@@ -71,6 +74,4 @@ public class ComponentEraser extends AbstractTemplateComponentManager {
         }
         return toRemoveRows;
     }
-
-
 }

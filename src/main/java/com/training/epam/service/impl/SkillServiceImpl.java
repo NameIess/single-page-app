@@ -12,12 +12,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Service("skillService")
 public class SkillServiceImpl implements SkillService {
-    private List<Composite> cashedComponent = new CopyOnWriteArrayList<>();
+    private List<Composite> cashedComponent;
     private SkillRepository skillRepository;
     private AbstractTemplateCacheManager cacheManager;
+    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private Lock readLock = readWriteLock.readLock();
+    private Lock writeLock = readWriteLock.writeLock();
+    private AtomicBoolean isActualData = new AtomicBoolean(false);
 
     @Autowired
     public SkillServiceImpl(SkillRepository skillRepository, AbstractTemplateCacheManager cacheManager) {
@@ -29,12 +37,18 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public List<Composite> findAll() throws ServiceException {
         try {
-            cashedComponent = skillRepository.findAll();
-            checkReceivedData(cashedComponent);
+            readLock.lock();
+
+            if (!isActualData.get()) {
+                cashedComponent = skillRepository.findAll();
+                checkReceivedData(cashedComponent);
+            }
 
             return cashedComponent;
         } catch (DaoException e) {
             throw new ServiceException("Exception within findAll(): " + e.getMessage(), e);
+        } finally {
+            readLock.unlock();
         }
     }
 
@@ -42,42 +56,67 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public boolean updateName(JsonDto jsonDto) throws ServiceException {
         try {
-            boolean isUpdated = skillRepository.update(jsonDto);
-            return isUpdated;
+            writeLock.lock();
 
+            isActualData.set(false);
+            boolean isUpdated = skillRepository.update(jsonDto);
+
+            return isUpdated;
         } catch (DaoException e) {
-            throw new ServiceException("Exception within updateName(): " + e.getMessage(), e);
+            throw new ServiceException("Exception within updateNode(): " + e.getMessage(), e);
+        } finally {
+            writeLock.unlock();
         }
     }
 
     @Override
     public List<Composite> searchByCriteria(JsonDto jsonDto) throws ServiceException {
-        List<Composite> compositeList = cacheManager.handleCriteria(cashedComponent, jsonDto);
+        try {
+            readLock.lock();
 
-        checkReceivedData(compositeList);
+            List<Composite> compositeList;
 
-        return compositeList;
+            if (!isActualData.get()) {
+                cashedComponent = findAll();
+            }
+            compositeList = cacheManager.handleCriteria(cashedComponent, jsonDto);
+            checkReceivedData(compositeList);
+
+            return compositeList;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean save(JsonDto jsonDto) throws ServiceException {
         try {
-            boolean isSaved = skillRepository.save(jsonDto);
-            return isSaved;
+            writeLock.lock();
 
+            isActualData.set(false);
+            boolean isSaved = skillRepository.save(jsonDto);
+
+            return isSaved;
         } catch (DaoException e) {
             throw new ServiceException("Exception within save(): " + e.getMessage(), e);
+        } finally {
+            writeLock.unlock();
         }
     }
 
     @Override
     public boolean delete(JsonDto jsonDto) throws ServiceException {
         try {
-            boolean isDeleted = skillRepository.delete(jsonDto);
-            return isDeleted;
+            writeLock.lock();
 
+            isActualData.set(false);
+            boolean isDeleted = skillRepository.delete(jsonDto);
+
+            return isDeleted;
         } catch (DaoException e) {
             throw new ServiceException("Exception within delete(): " + e.getMessage(), e);
+        } finally {
+            writeLock.unlock();
         }
     }
 

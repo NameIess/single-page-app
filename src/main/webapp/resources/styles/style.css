@@ -6,7 +6,6 @@
 }
 .container .content {
     display: none;
-    padding : 5px;
 }
 
 .just-padding {
@@ -39,6 +38,13 @@
     padding-left: 45px;
 }
 
-.list-group-item .glyphicon {
-    margin-right: 5px;
+.validator-message {
+    padding-top: 15px;
+}
+.validator-message .error {
+    color: #E3000E;
+}
+
+.validator-message .not-error {
+    color: #25be2d;
 }
