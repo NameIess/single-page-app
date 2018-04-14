@@ -1,11 +1,12 @@
-package com.training.epam.dao.impl;
+package com.training.epam.dao.impl.unit;
 
 import com.training.epam.dao.ComponentParser;
 import com.training.epam.dao.exception.DaoException;
+import com.training.epam.dao.impl.SkillRepositoryImpl;
 import com.training.epam.dao.template.AbstractTemplateComponentManager;
 import com.training.epam.entity.Composite;
 import com.training.epam.entity.dto.request.JsonDto;
-import com.training.epam.resources.TestResource;
+import resources.TestResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

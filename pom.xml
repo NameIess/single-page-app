@@ -44,6 +44,8 @@
         <junit.version>4.12</junit.version>
         <junit-dataprovider.version>1.10.0</junit-dataprovider.version>
         <mockito-all.version>1.9.5</mockito-all.version>
+        <powermock.version>1.6.1</powermock.version>
+        <log4j-core.version>2.9.1</log4j-core.version>
     </properties>
 
 
@@ -115,9 +117,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-            <version>${spring-boot-starter.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j-core.version}</version>
         </dependency>
 
         <dependency>
@@ -156,6 +158,20 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>${mockito-all.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

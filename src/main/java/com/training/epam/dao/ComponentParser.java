@@ -4,13 +4,16 @@ import com.training.epam.dao.exception.DaoException;
 import com.training.epam.entity.Composite;
 import com.training.epam.entity.validator.Verifiable;
 import com.training.epam.factory.CompositeFactory;
-import com.training.epam.util.FileBrowser;
+import com.training.epam.util.FileReader;
+import com.training.epam.util.XLSBusinessException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,35 +24,31 @@ import java.util.Map;
 public class ComponentParser {
     private static final int NODE_CELL_NUMBER = 0;
     private CompositeFactory compositeFactory;
-    private FileBrowser fileBrowser;
     private Verifiable<Cell> cellValidator;
+    private FileReader fileReader;
 
     @Autowired
-    public ComponentParser(CompositeFactory compositeFactory, FileBrowser fileBrowser, Verifiable<Cell> cellValidator) {
+    public ComponentParser(CompositeFactory compositeFactory, Verifiable<Cell> cellValidator, FileReader fileReader) {
         this.compositeFactory = compositeFactory;
-        this.fileBrowser = fileBrowser;
         this.cellValidator = cellValidator;
+        this.fileReader = fileReader;
     }
 
     public List<Composite> parseFile(String fileName) throws DaoException {
-        List<Composite> componentList = new ArrayList<>();
-        Workbook workbook = readFile(fileName);
+        try {
+            List<Composite> componentList = new ArrayList<>();
+            Workbook workbook = fileReader.readFile(fileName);
 
-        for (Sheet sheet : workbook) {
-            Composite component = buildComposite(sheet);
-            componentList.add(component);
-        }
+            for (Sheet sheet : workbook) {
+                Composite component = buildComposite(sheet);
+                componentList.add(component);
+            }
 
-        return componentList;
-    }
-
-    private Workbook readFile(String fileName) throws DaoException {     // fileReader??
-        File file = fileBrowser.getFile(fileName);
-        try (Workbook workbook = WorkbookFactory.create(file)) {
-            return workbook;
-
-        } catch (InvalidFormatException | IOException e) {
-            throw new DaoException("Exception within readFile(): " + e.getMessage(), e);
+            return componentList;
+        } catch (IOException | InvalidFormatException e) {
+            throw new DaoException("Error during file parsing. " + e.getMessage(), e);
+        } catch (XLSBusinessException e) {
+            throw new DaoException("Invalid file structure. " + e.getMessage(), e);
         }
     }
 

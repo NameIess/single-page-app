@@ -12,7 +12,6 @@
 <body>
 
 <nav class="navbar navbar-default" role="navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
             <span class="sr-only">Toggle navigation</span>
@@ -23,7 +22,6 @@
         <a class="navbar-brand" onclick="findAll()">Developer skills</a>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <div class="col-sm-3 col-md-3">
             <form class="navbar-form navbar-right" role="search" id="search-form">
@@ -31,8 +29,7 @@
                     <input type="text" class="form-control" placeholder="Search" id="search-criteria"
                            name="search-criteria">
                     <div class="input-group-btn">
-                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
-                        </button>
+                        <button class="btn btn-default" id="modal-submit" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                     </div>
                 </div>
             </form>
@@ -41,12 +38,9 @@
     </div>
 </nav>
 
-<div class="container">
-    <div id="feedback" class="col-lg-8"></div>
-</div>
 
 <div class="container">
-    <h2>Elements</h2>
+    <h2>Skills</h2>
     <div class="just-padding">
         <div class='header list-group'>
             <i class='glyphicon glyphicon-chevron-right nesting'></i>
@@ -96,8 +90,6 @@
 
 <div class="modal fade" id="event-modal" role="dialog">
     <div class="modal-dialog">
-
-        <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -110,13 +102,12 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
-
     </div>
 </div>
 
 
 <script src="${pageContext.request.contextPath}/resources/scripts/jQuery3.3.1.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/scripts/bootstrap.js"></script>
 <script src="${pageContext.request.contextPath}/resources/scripts/event_handler.js"></script>
 <script src="${pageContext.request.contextPath}/resources/scripts/search-validator.js"></script>
 </body>

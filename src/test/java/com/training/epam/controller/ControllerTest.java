@@ -4,7 +4,7 @@ import com.training.epam.entity.Composite;
 import com.training.epam.entity.dto.request.CreatingCriteria;
 import com.training.epam.entity.dto.request.SearchingCriteria;
 import com.training.epam.entity.dto.request.UpdatingCriteria;
-import com.training.epam.resources.TestResource;
+import resources.TestResource;
 import com.training.epam.service.SkillService;
 import com.training.epam.service.exception.ServiceException;
 import org.junit.Assert;
@@ -129,7 +129,7 @@ public class ControllerTest {
     }
 
     @Test(expected = ServiceException.class)
-    public void shouldThrowServiceExceptionInseadDeleteWhenDataSourceError() throws ServiceException {
+    public void shouldThrowServiceExceptionInsteadDeleteWhenDataSourceError() throws ServiceException {
         when(skillService.delete(any(SearchingCriteria.class))).thenThrow(ServiceException.class);
 
         underTest.delete(TestResource.SEARCHING_CRITERIA);

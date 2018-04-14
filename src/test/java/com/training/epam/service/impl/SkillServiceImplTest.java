@@ -4,7 +4,7 @@ import com.training.epam.dao.SkillRepository;
 import com.training.epam.dao.exception.DaoException;
 import com.training.epam.entity.Composite;
 import com.training.epam.entity.dto.request.JsonDto;
-import com.training.epam.resources.TestResource;
+import resources.TestResource;
 import com.training.epam.service.SkillService;
 import com.training.epam.service.exception.ServiceException;
 import com.training.epam.service.impl.template.AbstractTemplateCacheManager;
@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -102,6 +103,47 @@ public class SkillServiceImplTest {
     }
 
     @Test
+    public void shouldFindAndReturnEntityFromCashedListWhenInformationIsActual() throws DaoException, ServiceException {
+        doReturn(TestResource.compositeList).when(skillRepository).findAll();
+        underTest.findAll();
+        verify(skillRepository, times(1)).findAll();
+
+        List<Composite> compositeList = new ArrayList<>();
+        compositeList.addAll(TestResource.compositeList);
+        compositeList.add(new Composite());
+        when(cacheManager.handleCriteria(anyList(), any(JsonDto.class))).thenReturn(compositeList);
+
+        List<Composite> firstCachedList = underTest.searchByCriteria(TestResource.SEARCHING_CRITERIA);
+        verify(skillRepository, times(1)).findAll();
+
+        List<Composite> secondCachedList = underTest.searchByCriteria(TestResource.SEARCHING_CRITERIA);
+        verify(skillRepository, times(1)).findAll();
+
+
+        Assert.assertEquals(firstCachedList, secondCachedList);
+        Assert.assertNotEquals(firstCachedList, TestResource.compositeList);
+        Assert.assertNotEquals(secondCachedList, TestResource.compositeList);
+    }
+
+    @Test
+    public void shouldFindAllEntitiesAndReturnNewListFromDataSourceWhenInformationIsNotActual() throws DaoException, ServiceException {
+        doReturn(TestResource.compositeList).when(skillRepository).findAll();
+        underTest.findAll();
+        verify(skillRepository, times(1)).findAll();
+
+        List<Composite> compositeList = new ArrayList<>();
+        compositeList.addAll(TestResource.compositeList);
+        compositeList.add(new Composite());
+        doReturn(compositeList).when(skillRepository).findAll();
+        when(skillRepository.update(any(JsonDto.class))).thenReturn(true);
+        underTest.updateName(TestResource.UPDATING_CRITERIA);
+        List<Composite> actualResult = underTest.findAll();
+        verify(skillRepository, times(2)).findAll();
+
+        Assert.assertNotEquals(actualResult, TestResource.compositeList);
+    }
+
+    @Test
     public void shouldSaveEntityAndReturnTrueWhenEntityValid() throws ServiceException, DaoException {
         boolean expectedResult = true;
         when(skillRepository.save(any(JsonDto.class))).thenReturn(expectedResult);
@@ -128,6 +170,19 @@ public class SkillServiceImplTest {
         Assert.assertEquals(actualResult, TestResource.compositeList);
     }
 
+    @Test
+    public void shouldFindAllEntitiesAndReturnCashedListWhenInformationIsActual() throws DaoException, ServiceException {
+        doReturn(TestResource.compositeList).when(skillRepository).findAll();
+        underTest.findAll();
+        verify(skillRepository, times(1)).findAll();
+
+        doReturn(null).when(skillRepository).findAll();
+        List<Composite> actualResult = underTest.findAll();
+        verify(skillRepository, times(1)).findAll();
+
+        Assert.assertEquals(actualResult, TestResource.compositeList);
+    }
+
     @Test(expected = ServiceException.class)
     public void shouldThrowServiceExceptionInsteadFindAllWhenDataSourceError() throws DaoException, ServiceException {
         when(skillRepository.findAll()).thenThrow(DaoException.class);
@@ -148,4 +203,6 @@ public class SkillServiceImplTest {
 
         underTest.findAll();
     }
+
+
 }

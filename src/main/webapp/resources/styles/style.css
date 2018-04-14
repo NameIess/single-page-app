@@ -41,10 +41,10 @@
 .validator-message {
     padding-top: 15px;
 }
-.validator-message .error {
+div .validator-message .error {
     color: #E3000E;
 }
 
-.validator-message .not-error {
+div .validator-message .not-error {
     color: #25be2d;
 }

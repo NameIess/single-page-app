@@ -42,12 +42,14 @@ public class SkillServiceImpl implements SkillService {
             if (!isActualData.get()) {
                 cashedComponent = skillRepository.findAll();
                 checkReceivedData(cashedComponent);
+                isActualData.set(true);
             }
 
             return cashedComponent;
         } catch (DaoException e) {
             throw new ServiceException("Exception within findAll(): " + e.getMessage(), e);
-        } finally {
+        }
+        finally {
             readLock.unlock();
         }
     }
@@ -58,13 +60,16 @@ public class SkillServiceImpl implements SkillService {
         try {
             writeLock.lock();
 
-            isActualData.set(false);
             boolean isUpdated = skillRepository.update(jsonDto);
+            if (isUpdated) {
+                isActualData.set(false);
+            }
 
             return isUpdated;
         } catch (DaoException e) {
             throw new ServiceException("Exception within updateNode(): " + e.getMessage(), e);
-        } finally {
+        }
+        finally {
             writeLock.unlock();
         }
     }
@@ -74,6 +79,7 @@ public class SkillServiceImpl implements SkillService {
         try {
             readLock.lock();
 
+        findAll();
             List<Composite> compositeList;
 
             if (!isActualData.get()) {
@@ -83,7 +89,8 @@ public class SkillServiceImpl implements SkillService {
             checkReceivedData(compositeList);
 
             return compositeList;
-        } finally {
+        }
+        finally {
             readLock.unlock();
         }
     }
@@ -93,13 +100,16 @@ public class SkillServiceImpl implements SkillService {
         try {
             writeLock.lock();
 
-            isActualData.set(false);
             boolean isSaved = skillRepository.save(jsonDto);
+            if (isSaved) {
+                isActualData.set(false);
+            }
 
             return isSaved;
         } catch (DaoException e) {
             throw new ServiceException("Exception within save(): " + e.getMessage(), e);
-        } finally {
+        }
+        finally {
             writeLock.unlock();
         }
     }
@@ -109,13 +119,16 @@ public class SkillServiceImpl implements SkillService {
         try {
             writeLock.lock();
 
-            isActualData.set(false);
             boolean isDeleted = skillRepository.delete(jsonDto);
+            if (isDeleted) {
+                isActualData.set(false);
+            }
 
             return isDeleted;
         } catch (DaoException e) {
             throw new ServiceException("Exception within delete(): " + e.getMessage(), e);
-        } finally {
+        }
+        finally {
             writeLock.unlock();
         }
     }

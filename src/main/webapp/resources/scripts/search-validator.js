@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     const CELL_PATTERN = /^(?![= ]).{1,255}/;
     const CELL_ERROR_MESSAGE = "The string must be between 1 and 255 characters. The first character must not be '=' or ' '";
-    const SUCCESS_MESSAGE = "Done";
+    const SUCCESS_MESSAGE = "Done!";
 
     $('input[name="search-criteria"]').bind('keyup change', function () {
         let passwordValue = $(this).val();

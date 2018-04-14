@@ -5,11 +5,13 @@ import com.training.epam.entity.dto.request.CreatingCriteria;
 import com.training.epam.entity.dto.request.JsonDto;
 import com.training.epam.entity.validator.Verifiable;
 import com.training.epam.util.FileBrowser;
+import com.training.epam.util.FileConnector;
 import com.training.epam.util.FileWriter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component("componentCreator")
@@ -65,7 +67,7 @@ public class ComponentCreator extends AbstractTemplateComponentManager {
         Row expectedRow = sheet.getRow(rowIndex);
         if (expectedRow != null) {
             Cell expectedCell = expectedRow.getCell(cellIndex);
-            isCellExist = (expectedCell == null || expectedCell.getStringCellValue() != null);
+            isCellExist = (expectedCell == null || !expectedCell.getStringCellValue().isEmpty());
         }
 
         return isCellExist;

@@ -4,8 +4,9 @@ import com.training.epam.dao.exception.DaoException;
 import com.training.epam.entity.dto.request.JsonDto;
 import com.training.epam.entity.validator.Verifiable;
 import com.training.epam.util.FileBrowser;
-import com.training.epam.util.XLSBusinessException;
+import com.training.epam.util.FileConnector;
 import com.training.epam.util.FileWriter;
+import com.training.epam.util.XLSBusinessException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public abstract class AbstractTemplateComponentManager {
     private Verifiable<Cell> cellVerifiable;
 
     @Autowired
-    public AbstractTemplateComponentManager(FileBrowser fileBrowser, FileWriter fileSaver, Verifiable<Cell> cellVerifiable) {
+    public AbstractTemplateComponentManager(
+            FileBrowser fileBrowser, FileWriter fileSaver, Verifiable<Cell> cellVerifiable) {
         this.fileBrowser = fileBrowser;
         this.fileSaver = fileSaver;
         this.cellVerifiable = cellVerifiable;
@@ -39,7 +41,9 @@ public abstract class AbstractTemplateComponentManager {
                     hasSuccess = execute(sheet, jsonDto);
                 }
 
-                fileSaver.saveFile(file, workbook);
+                if (hasSuccess) {
+                    fileSaver.saveFile(file, workbook);
+                }
             }
 
             return hasSuccess;
@@ -56,7 +60,7 @@ public abstract class AbstractTemplateComponentManager {
                 if (cellVerifiable.isValid(cell)) {
                     String cellValue = cell.getStringCellValue();
                     if (cellValue.equals(cellName)) {
-                        keyCell = cell;      // NEED A WAY TO BREAK
+                        keyCell = cell;
                     }
                 }
             }

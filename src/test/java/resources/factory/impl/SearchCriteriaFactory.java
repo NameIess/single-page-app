@@ -1,14 +1,14 @@
-package com.training.epam.resources.factory.impl;
+package resources.factory.impl;
 
 import com.training.epam.entity.dto.request.SearchingCriteria;
-import com.training.epam.resources.factory.JsonDtoFactory;
+import resources.factory.JsonDtoFactory;
 
 public class SearchCriteriaFactory implements JsonDtoFactory<SearchingCriteria> {
 
     @Override
-    public SearchingCriteria create(String name) {
+    public SearchingCriteria create(String id) {
         SearchingCriteria criteria = new SearchingCriteria();
-        criteria.setCurrentName(name);
+        criteria.setCurrentName(id);
         return criteria;
     }
 
@@ -16,5 +16,10 @@ public class SearchCriteriaFactory implements JsonDtoFactory<SearchingCriteria> 
     public SearchingCriteria create() {
         SearchingCriteria criteria = new SearchingCriteria();
         return criteria;
+    }
+
+    @Override
+    public SearchingCriteria create(String id, String target) {
+        return null;
     }
 }

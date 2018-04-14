@@ -5,7 +5,7 @@ import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import com.training.epam.entity.Composite;
 import com.training.epam.entity.dto.request.JsonDto;
-import com.training.epam.resources.TestResource;
+import resources.TestResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration monitorInterval="60">
     <Properties>
-        <Property name="log-path">${catalina.home}</Property>
+        <Property name="log-path">logs</Property>
         <Property name="archive">${log-path}/archive</Property>
     </Properties>
     <Appenders>
@@ -33,7 +33,7 @@
     <Loggers>
         <Logger name="com.training.epam.log4j2xml" level="debug" additivity="false">
             <AppenderRef ref="File-Appender" level="error"/>
-            <AppenderRef ref="RollingFile-Appender" level="debug"/>
+            <AppenderRef ref="RollingFile-Appender" level="info"/>
             <AppenderRef ref="Console-Appender" level="info"/>
         </Logger>
         <Root level="debug">

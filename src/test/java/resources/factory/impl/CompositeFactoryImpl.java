@@ -1,7 +1,7 @@
-package com.training.epam.resources.factory.impl;
+package resources.factory.impl;
 
 import com.training.epam.entity.Composite;
-import com.training.epam.resources.factory.CompositeFactory;
+import resources.factory.CompositeFactory;
 
 public class CompositeFactoryImpl implements CompositeFactory {
     @Override

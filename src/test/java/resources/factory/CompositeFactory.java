@@ -1,4 +1,4 @@
-package com.training.epam.resources.factory;
+package resources.factory;
 
 import com.training.epam.entity.Composite;
 

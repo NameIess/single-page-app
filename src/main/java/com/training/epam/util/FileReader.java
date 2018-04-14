@@ -10,24 +10,18 @@ import java.io.File;
 import java.io.IOException;
 
 @Component("xlsFileReader")
-public class FileReader {
+public class FileReader implements FileConnector {
     private FileBrowser fileBrowser;
+
 
     @Autowired
     public FileReader(FileBrowser fileBrowser) {
         this.fileBrowser = fileBrowser;
     }
 
-    public Workbook readXSD(String fileName) throws IOException, InvalidFormatException {
+    public Workbook readFile(String fileName) throws IOException, InvalidFormatException, XLSBusinessException {
         File file = fileBrowser.getFile(fileName);
-        Workbook workbook = createWorkbook(file);
-        return workbook;
-    }
-
-
-    private Workbook createWorkbook(File file) throws IOException, InvalidFormatException {
         Workbook workbook = WorkbookFactory.create(file);
         return workbook;
     }
-
 }

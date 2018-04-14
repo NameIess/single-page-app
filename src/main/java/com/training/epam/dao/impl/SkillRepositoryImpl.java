@@ -8,6 +8,7 @@ import com.training.epam.entity.Composite;
 import com.training.epam.entity.dto.request.JsonDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,7 +22,11 @@ public class SkillRepositoryImpl implements SkillRepository {
     private AbstractTemplateComponentManager componentEraser;
 
     @Autowired
-    public SkillRepositoryImpl(ComponentParser componentParser, @Qualifier("componentUpdater") AbstractTemplateComponentManager componentUpdater, @Qualifier("componentCreator") AbstractTemplateComponentManager componentCreator, @Qualifier("componentEraser") AbstractTemplateComponentManager componentEraser) {
+    public SkillRepositoryImpl(
+            ComponentParser componentParser, @Qualifier("componentUpdater") AbstractTemplateComponentManager componentUpdater,
+            @Qualifier("componentCreator") AbstractTemplateComponentManager componentCreator,
+            @Qualifier("componentEraser") AbstractTemplateComponentManager componentEraser
+    ) {
         this.componentParser = componentParser;
         this.componentUpdater = componentUpdater;
         this.componentCreator = componentCreator;

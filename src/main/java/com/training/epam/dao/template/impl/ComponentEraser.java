@@ -5,17 +5,19 @@ import com.training.epam.entity.dto.request.JsonDto;
 import com.training.epam.entity.dto.request.SearchingCriteria;
 import com.training.epam.entity.validator.Verifiable;
 import com.training.epam.util.FileBrowser;
+import com.training.epam.util.FileConnector;
 import com.training.epam.util.FileWriter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component("componentEraser")
-public class ComponentEraser extends AbstractTemplateComponentManager {     // НЕ УДАЛЯЕТСЯ ПОСЛЕДНИЙ ЭЛЕМЕНТ
+public class ComponentEraser extends AbstractTemplateComponentManager {
 
     public ComponentEraser(FileBrowser fileBrowser, FileWriter fileSaver, Verifiable<Cell> cellValidator) {
         super(fileBrowser, fileSaver, cellValidator);
@@ -39,11 +41,11 @@ public class ComponentEraser extends AbstractTemplateComponentManager {     // �
     }
 
     private void removeRows(Sheet sheet, List<Row> rowList) {
-        int totalRowsAmout = sheet.getLastRowNum();
+        int totalRowsAmount = sheet.getLastRowNum();
         for (Row row : rowList) {
             int nextRowIndex = row.getRowNum() + 1;
-            if (nextRowIndex < totalRowsAmout) {
-                sheet.shiftRows(nextRowIndex, totalRowsAmout, -1);
+            if (nextRowIndex <= totalRowsAmount) {
+                sheet.shiftRows(nextRowIndex, totalRowsAmount, -1);
             } else {
                 sheet.removeRow(row);
             }
@@ -53,7 +55,7 @@ public class ComponentEraser extends AbstractTemplateComponentManager {     // �
 
     private List<Row> findRowsToRemove(Sheet sheet, Cell parentCell) {
         Row parentRow = parentCell.getRow();
-        int rowNum = parentRow.getRowNum() + 1;     // ошибка с последним элементом
+        int rowNum = parentRow.getRowNum() + 1;
         int parentNesting = parentCell.getColumnIndex();
 
         List<Row> toRemoveRows = new ArrayList<>();
@@ -65,7 +67,7 @@ public class ComponentEraser extends AbstractTemplateComponentManager {     // �
             for (Cell cell : row) {
                 int childNesting = cell.getColumnIndex();
 
-                if (!cell.getStringCellValue().isEmpty() && childNesting > parentNesting) {
+                if (isCellValid(cell) && childNesting > parentNesting) {
                     toRemoveRows.add(cell.getRow());
                 } else {
                     isSearchActual = false;
